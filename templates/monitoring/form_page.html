@@ -1,0 +1,62 @@
+{% extends "monitoring/base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block breadcrumb %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">{{ eyebrow|upper }}</span>
+    <h1>{{ page_title }}</h1>
+    <p class="muted">Fields marked <span class="required">*</span> are required.</p>
+  </div>
+  <a class="btn btn-secondary" href="{% url back_url %}">← Back</a>
+</div>
+
+<div class="form-layout">
+  <section class="panel form-panel">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.errors %}
+        <div class="alert alert-error" role="alert">Please correct the highlighted fields below.</div>
+      {% endif %}
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-error">{{ error }}</div>
+      {% endfor %}
+
+      {% for field in form %}
+        <div class="form-field {% if field.field.widget.input_type == 'checkbox' %}checkbox-field{% endif %} {% if field.errors %}has-error{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <label class="checkbox-label">{{ field }} <span>{{ field.label }}</span></label>
+          {% else %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
+            {{ field }}
+          {% endif %}
+          {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <a class="btn btn-secondary" href="{% url back_url %}">Cancel</a>
+        {% if allow_save_another %}
+          <button class="btn btn-secondary" type="submit" name="save_another" value="1">Save & add another</button>
+        {% endif %}
+        <button class="btn btn-primary" type="submit">{{ submit_label }} <span>→</span></button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="form-aside">
+    <div class="aside-icon">✳</div>
+    <h3>Keep records reliable</h3>
+    <p>Accurate measurements and consistent records help fisheries officers monitor catch compliance.</p>
+    <div class="aside-rule"></div>
+    <strong>Remember</strong>
+    {% if show_legal_note %}
+      <p>Only enter a minimum size you have checked against current official fisheries regulations, and record where it came from. Changing the minimum re-checks every existing catch of this species.</p>
+    {% else %}
+      <p>A catch is flagged automatically when its measured length is below the species' configured minimum. Leave the length empty if the fish was not measured.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

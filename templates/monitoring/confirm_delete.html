@@ -1,0 +1,24 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Confirm delete{% endblock %}
+{% block breadcrumb %}Confirm delete{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">PERMANENT ACTION</span>
+    <h1>Delete this record?</h1>
+    <p class="muted">{{ object_label }}</p>
+  </div>
+</div>
+
+<section class="panel form-panel confirm-panel">
+  <div class="alert alert-error">
+    This cannot be undone. {{ warning }}
+  </div>
+  <form method="post" class="form-actions">
+    {% csrf_token %}
+    <a class="btn btn-secondary" href="{{ cancel_url }}">Cancel</a>
+    <button class="btn btn-danger" type="submit">Yes, delete permanently</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% comment %}Shared catch table. Include with: records.{% endcomment %}
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>RECORD / SPECIES</th>
+        <th>LANDING SITE</th>
+        <th>FISHER</th>
+        <th>QTY</th>
+        <th>LENGTH</th>
+        <th>DATE</th>
+        <th>STATUS</th>
+        <th><span class="visually-hidden">Open</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td>
+          <div class="primary-cell">{{ r.species.name }}</div>
+          <div class="secondary-cell">{{ r.reference }}</div>
+        </td>
+        <td>{{ r.landing_site.name }}</td>
+        <td>{{ r.fisher.full_name|default:"—" }}</td>
+        <td>{{ r.quantity }}</td>
+        <td>{% if r.measured_length_cm is not None %}{{ r.measured_length_cm }} cm{% else %}<span class="muted">Not measured</span>{% endif %}</td>
+        <td>{{ r.catch_date|date:"d M Y" }}</td>
+        <td><span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></td>
+        <td><a class="row-action" href="{% url 'catch_detail' r.pk %}" aria-label="Open {{ r.reference }}">↗</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

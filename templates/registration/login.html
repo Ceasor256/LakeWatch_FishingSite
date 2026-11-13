@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · LakeWatch</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="login-page">
+  <div class="login-shell">
+    <div class="login-brand">
+      <span class="brand-mark">LW</span>
+      <div><strong>LakeWatch</strong><small>Landing Site Compliance</small></div>
+    </div>
+
+    <div class="login-card">
+      <span class="eyebrow">WELCOME BACK</span>
+      <h1>Sign in to your workspace</h1>
+      <p class="muted">Manage catches, inspections and compliance records.</p>
+
+      {% if form.errors %}
+        <div class="alert alert-error" role="alert">Your username or password was not correct. Please try again.</div>
+      {% endif %}
+      {% if next and user.is_authenticated %}
+        <div class="alert alert-info">Your account doesn't have access to that page.</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" autocomplete="username" autofocus required value="{{ form.username.value|default:'' }}">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="btn btn-primary btn-full" type="submit">Sign in <span>→</span></button>
+      </form>
+      <p class="login-foot">Access is restricted to authorised staff. Ask your administrator for an account.</p>
+    </div>
+
+    <p class="login-copy">Protecting fisheries through better records and responsible monitoring.</p>
+  </div>
+</body>
+</html>

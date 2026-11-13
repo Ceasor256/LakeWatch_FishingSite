@@ -1,0 +1,51 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Fish species & limits{% endblock %}
+{% block breadcrumb %}Fish species & limits{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">REGISTRY & RULES</span>
+    <h1>Fish species & limits</h1>
+    <p class="muted">Species and their verified minimum-size rules.{% if not request.user.is_staff %} Only staff users can add or change species.{% endif %}</p>
+  </div>
+  {% if request.user.is_staff %}<a class="btn btn-primary" href="{% url 'species_create' %}">＋ Add species</a>{% endif %}
+</div>
+
+<div class="alert alert-info">
+  Size limits must be checked against current official fisheries regulations before use. This system does not supply or certify legal thresholds.
+  Species without a minimum keep their catches as “Pending review”.
+</div>
+
+<section class="panel table-panel">
+  {% if species_list %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>SPECIES</th><th>CONFIGURED MINIMUM</th><th>LEGAL REFERENCE</th><th>RECORDS</th><th>FLAGGED</th><th>STATUS</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for s in species_list %}
+          <tr>
+            <td><div class="primary-cell">{{ s.name }}</div></td>
+            <td>{% if s.minimum_length_cm is not None %}{{ s.minimum_length_cm }} cm{% else %}<span class="muted">Not configured</span>{% endif %}</td>
+            <td>{{ s.legal_reference|default:"—" }}</td>
+            <td><a class="text-link" href="{% url 'catch_list' %}?species={{ s.pk }}">{{ s.catch_count }}</a></td>
+            <td>{% if s.flagged_count %}<a class="text-link" href="{% url 'catch_list' %}?species={{ s.pk }}&status=flagged">{{ s.flagged_count }}</a>{% else %}0{% endif %}</td>
+            <td><span class="status-pill {% if s.is_active %}status-compliant{% else %}status-neutral{% endif %}">{% if s.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+            <td>{% if request.user.is_staff %}<a class="row-action" href="{% url 'species_edit' s.pk %}" aria-label="Edit {{ s.name }}">✎</a>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span>≈</span>
+      <strong>No fish species registered</strong>
+      <p>Add species and verified size rules to enable automatic size checks.</p>
+      {% if request.user.is_staff %}<a class="btn btn-primary" href="{% url 'species_create' %}">＋ Add species</a>{% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

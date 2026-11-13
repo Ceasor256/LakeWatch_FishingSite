@@ -1,0 +1,65 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Catch records{% endblock %}
+{% block breadcrumb %}Catch records{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">CATCH MANAGEMENT</span>
+    <h1>Catch records</h1>
+    <p class="muted">Register, search and review fish landings.</p>
+  </div>
+  <div class="heading-actions">
+    <a class="btn btn-secondary" href="{% url 'export_catches' %}{% if query_string %}?{{ query_string }}{% endif %}" title="Downloads the records that match the current filters">↓ Export CSV</a>
+    <a class="btn btn-primary" href="{% url 'catch_create' %}">＋ Register catch</a>
+  </div>
+</div>
+
+<section class="panel table-panel">
+  <form class="filter-bar" method="get">
+    <div class="search-box">
+      <span>⌕</span>
+      <input type="search" name="q" value="{{ filters.q }}" placeholder="Search species, site, fisher, boat or LW-number…" aria-label="Search">
+    </div>
+    <select name="status" class="filter-select" aria-label="Status">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select name="site" class="filter-select" aria-label="Landing site">
+      <option value="">All sites</option>
+      {% for s in sites %}
+        <option value="{{ s.pk }}" {% if filters.site == s.pk|stringformat:"d" %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="species" class="filter-select" aria-label="Species">
+      <option value="">All species</option>
+      {% for s in species_options %}
+        <option value="{{ s.pk }}" {% if filters.species == s.pk|stringformat:"d" %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <label class="filter-date">From <input type="date" name="date_from" value="{{ filters.date_from }}" class="filter-select"></label>
+    <label class="filter-date">To <input type="date" name="date_to" value="{{ filters.date_to }}" class="filter-select"></label>
+    <button class="btn btn-secondary" type="submit">Filter</button>
+    {% if has_filters %}<a class="text-link" href="{% url 'catch_list' %}">Clear</a>{% endif %}
+  </form>
+
+  {% if records %}
+    {% include "monitoring/_catch_table.html" %}
+    {% include "monitoring/_pagination.html" %}
+  {% else %}
+    <div class="empty-state">
+      <span>⌕</span>
+      {% if has_filters %}
+        <strong>No matching records</strong>
+        <p>Try changing or <a class="text-link" href="{% url 'catch_list' %}">clearing</a> your filters.</p>
+      {% else %}
+        <strong>No catch records yet</strong>
+        <p>Register the first catch to start monitoring.</p>
+        <a class="btn btn-primary" href="{% url 'catch_create' %}">＋ Register catch</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

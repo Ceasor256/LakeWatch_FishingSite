@@ -1,0 +1,46 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Boats{% endblock %}
+{% block breadcrumb %}Boats{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">PEOPLE & BOATS</span>
+    <h1>Boats</h1>
+    <p class="muted">Boats linked to their landing sites and owners.</p>
+  </div>
+  <a class="btn btn-primary" href="{% url 'boat_create' %}">＋ Register boat</a>
+</div>
+
+<section class="panel table-panel">
+  {% if boats %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>BOAT</th><th>REGISTRATION</th><th>LANDING SITE</th><th>OWNER</th><th>CATCH RECORDS</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for b in boats %}
+          <tr>
+            <td><div class="primary-cell">{{ b.name_or_number }}</div></td>
+            <td>{{ b.registration_number|default:"—" }}</td>
+            <td>{{ b.landing_site.name }}</td>
+            <td>{{ b.owner.full_name|default:"—" }}</td>
+            <td>{{ b.catch_count }}</td>
+            <td><a class="row-action" href="{% url 'boat_edit' b.pk %}" aria-label="Edit {{ b.name_or_number }}">✎</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "monitoring/_pagination.html" %}
+  {% else %}
+    <div class="empty-state">
+      <span>⌁</span>
+      <strong>No boats registered</strong>
+      <p>Register a boat to connect it with catch records.</p>
+      <a class="btn btn-primary" href="{% url 'boat_create' %}">＋ Register boat</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

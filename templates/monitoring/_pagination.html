@@ -1,0 +1,15 @@
+{% comment %}Include with: page (a Django Page) and query_string (current filters without "page").{% endcomment %}
+{% if page.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Pages">
+  <span class="muted">Showing {{ page.start_index }}–{{ page.end_index }} of {{ page.paginator.count }}</span>
+  <div class="pagination-links">
+    {% if page.has_previous %}
+      <a class="btn btn-secondary btn-small" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page.previous_page_number }}">← Previous</a>
+    {% endif %}
+    <span class="pagination-current">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}
+      <a class="btn btn-secondary btn-small" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page.next_page_number }}">Next →</a>
+    {% endif %}
+  </div>
+</nav>
+{% endif %}

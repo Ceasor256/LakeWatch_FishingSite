@@ -1,0 +1,92 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Reports & analytics{% endblock %}
+{% block breadcrumb %}Reports & analytics{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">INSIGHTS & REPORTING</span>
+    <h1>Reports & analytics</h1>
+    <p class="muted">
+      A summary of recorded catches and configured size checks
+      {% if date_from or date_to %}from {{ date_from|default:"the first record" }} to {{ date_to|default:"today" }}{% else %}for all dates{% endif %}.
+    </p>
+  </div>
+  <a class="btn btn-primary" href="{% url 'export_catches' %}{% if export_query %}?{{ export_query }}{% endif %}">↓ Export catch CSV</a>
+</div>
+
+<section class="panel">
+  <form class="filter-bar filter-bar-flat" method="get">
+    <label class="filter-date">From <input type="date" name="date_from" value="{{ date_from }}" class="filter-select"></label>
+    <label class="filter-date">To <input type="date" name="date_to" value="{{ date_to }}" class="filter-select"></label>
+    <button class="btn btn-secondary" type="submit">Apply dates</button>
+    {% if date_from or date_to %}<a class="text-link" href="{% url 'reports' %}">Show all dates</a>{% endif %}
+  </form>
+</section>
+
+<div class="stat-grid report-stats">
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-label">Catch records</span><span class="stat-icon teal">▤</span></div>
+    <div class="stat-number">{{ totals.records }}</div>
+    <div class="stat-foot"><span class="stat-note">{{ totals.pending }} still pending review</span></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-label">Fish quantity</span><span class="stat-icon blue">♧</span></div>
+    <div class="stat-number">{{ total_quantity }}</div>
+    <div class="stat-foot"><span class="stat-note">Fish counted across all records</span></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-label">Flagged</span><span class="stat-icon amber">⚑</span></div>
+    <div class="stat-number">{{ totals.flagged }}</div>
+    <div class="stat-foot"><span class="stat-note warning-note">{{ flagged_rate }}% of records</span></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-label">Meets configured size</span><span class="stat-icon teal">✓</span></div>
+    <div class="stat-number">{{ totals.compliant }}</div>
+    <div class="stat-foot"><span class="stat-note">Not a legal certification</span></div>
+  </article>
+</div>
+
+<div class="dashboard-grid report-grid">
+  <section class="panel table-panel">
+    <div class="panel-heading"><div><h2>By species</h2><p class="muted">Records, fish counted and flagged records</p></div></div>
+    {% if species_summary %}
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>SPECIES</th><th>RECORDS</th><th>QUANTITY</th><th>FLAGGED</th></tr></thead>
+          <tbody>
+            {% for s in species_summary %}
+              <tr><td>{{ s.species__name }}</td><td>{{ s.records }}</td><td><strong>{{ s.quantity|default:0 }}</strong></td><td>{{ s.flagged }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state compact"><p>No catch data for this period.</p></div>
+    {% endif %}
+  </section>
+
+  <section class="panel table-panel">
+    <div class="panel-heading"><div><h2>By landing site</h2><p class="muted">Records, fish counted and flagged records</p></div></div>
+    {% if site_summary %}
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>LANDING SITE</th><th>RECORDS</th><th>QUANTITY</th><th>FLAGGED</th></tr></thead>
+          <tbody>
+            {% for s in site_summary %}
+              <tr><td>{{ s.landing_site__name }}</td><td><strong>{{ s.records }}</strong></td><td>{{ s.quantity|default:0 }}</td><td>{{ s.flagged }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state compact"><p>No site data for this period.</p></div>
+    {% endif %}
+  </section>
+</div>
+
+<div class="alert alert-info">
+  Reports reflect data entered into this application. “Meets configured size” means the measured length met the minimum configured by a staff user;
+  verify regulations and inspect cases before taking enforcement action.
+</div>
+{% endblock %}

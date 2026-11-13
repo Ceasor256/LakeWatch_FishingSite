@@ -1,0 +1,12 @@
+# Secrets and local data
+.env
+db.sqlite3
+
+# Python / virtual environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Collected static files
+staticfiles/

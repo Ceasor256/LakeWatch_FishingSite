@@ -1,0 +1,14 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Not allowed{% endblock %}
+{% block breadcrumb %}Not allowed{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="empty-state">
+    <span>⛔</span>
+    <strong>You don't have permission to do that</strong>
+    <p>{{ exception|default:"This action is limited to staff users." }} Ask an administrator if you need access.</p>
+    <a class="btn btn-primary" href="{% url 'dashboard' %}">Back to overview</a>
+  </div>
+</section>
+{% endblock %}

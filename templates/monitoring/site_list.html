@@ -1,0 +1,45 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Landing sites{% endblock %}
+{% block breadcrumb %}Landing sites{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">REGISTRY</span>
+    <h1>Landing sites</h1>
+    <p class="muted">The sites included in your monitoring network.{% if not request.user.is_staff %} Only staff users can add or change sites.{% endif %}</p>
+  </div>
+  {% if request.user.is_staff %}<a class="btn btn-primary" href="{% url 'site_create' %}">＋ Add landing site</a>{% endif %}
+</div>
+
+<section class="panel table-panel">
+  {% if sites %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>SITE</th><th>DISTRICT</th><th>WATER BODY</th><th>CATCH RECORDS</th><th>STATUS</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for s in sites %}
+          <tr>
+            <td><div class="primary-cell">{{ s.name }}</div></td>
+            <td>{{ s.district|default:"—" }}</td>
+            <td>{{ s.water_body|default:"—" }}</td>
+            <td><a class="text-link" href="{% url 'catch_list' %}?site={{ s.pk }}">{{ s.catch_count }}</a></td>
+            <td><span class="status-pill {% if s.is_active %}status-compliant{% else %}status-neutral{% endif %}">{% if s.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+            <td>{% if request.user.is_staff %}<a class="row-action" href="{% url 'site_edit' s.pk %}" aria-label="Edit {{ s.name }}">✎</a>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span>⌖</span>
+      <strong>No landing sites registered</strong>
+      <p>Add your first site before recording catches.</p>
+      {% if request.user.is_staff %}<a class="btn btn-primary" href="{% url 'site_create' %}">＋ Add landing site</a>{% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
